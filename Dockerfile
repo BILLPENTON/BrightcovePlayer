@@ -1,12 +1,13 @@
-FROM 	nginx/unit:1.24.0-python3.9
+FROM tiangolo/uwsgi-nginx-flask:flask
 
-LABEL maintainer="Deshdeepak <rkdeshdeepak1@gmail.com>"
+# copy over our requirements.txt file
+COPY requirements.txt /tmp/
 
-COPY 	requirements.txt /tmp/requirements.txt
+# upgrade pip and install required python packages
+RUN pip install -U pip
+RUN pip install -r /tmp/requirements.txt
 
-RUN 	pip install -r /tmp/requirements.txt                               \
-    	&& apt autoremove --purge -y                                              \
-    	&& rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/*.list
+# copy over our app code
+COPY ./app /app
 
-COPY 	./config.json /docker-entrypoint.d/config.json
-COPY 	./webapp /bcp
+ENV MESSAGE "Starting app"
